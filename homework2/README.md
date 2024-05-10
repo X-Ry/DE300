@@ -17,7 +17,7 @@ The goal of the assignment is to
 
    - restart.sh -- This Bash file is a utility script I added in for convenience. This script terminates all active Docker processes and reinstates them by rerunning run.sh. If you need to re-run run.sh for some reason, you would run this script instead.
 
-## Instruction for deploying: (please write this section for you future homework/lab submission on behalf of the grading)
+## Instruction for deploying my HW2:
 
    - Run the run.sh file to create initiate all required containers(etl-container and postgres-container) and enter the shell of etl-container. 
    - Start the jupyter notebook by 'jupyter notebook --ip=0.0.0.0 --allow-root'. 
