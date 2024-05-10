@@ -9,13 +9,13 @@ The goal of the assignment is to
 
 ## Files in this folder
 
-   - data -- folder that contains the raw data.
-
    - dockerfiles -- Put all dockerfiles for the project in this folder. In this case only one docker container is nessecary, 'dockerfile-jupyter' is used for creating a python image with required package that relates to the project.
    
    - run.sh -- This creates the docker volume, creates the image for the jupyter container, and runs the jupyter container
       
-   - src -- This creates soource files and staging data.
+   - src -- This creates source files.
+
+   - restart.sh -- This Bash file is a utility script I added in for convenience. This script terminates all active Docker processes and reinstates them by rerunning run.sh. If you need to re-run run.sh for some reason, you would run this script instead.
 
 ## Instruction for deploying: (please write this section for you future homework/lab submission on behalf of the grading)
 

@@ -21,19 +21,14 @@ RUN python -m venv /venv
 # Activate the virtual environment
 ENV PATH="/venv/bin:${PATH}"
 
-RUN pip install pandas sqlalchemy psycopg2-binary jupyter pyarrow matplotlib scipy
+RUN pip install pandas sqlalchemy psycopg2-binary jupyter pyarrow matplotlib scipy boto3 bs4 requests scikit-learn
 
 
 #switch to non-root user
 USER ryan
 
-
-# Copy ETL scripts or Jupyter notebooks into the container
-COPY ./data/* /app/rawdata/
-
 # Optional: If you have notebooks to copy
-COPY ./src/HW1_fixed_for_lab5.ipynb /app/HW1_fixed_for_lab5.ipynb 
-COPY ./src/utilities.py /app/utilities.py
+COPY ./src/HW2.ipynb /app/HW2.ipynb
 
 # Expose the Jupyter Notebook port
 EXPOSE 8888
