@@ -17,7 +17,7 @@ The goal of the assignment is to
       
    - src -- This creates soource files and staging data.
 
-## Instruction for deploying: (please write this section for you future homework/lab submission on behalf of the grading)
+## Instruction for deploying my HW2:
 
    - Run the run.sh file to create initiate all required containers(etl-container and postgres-container) and enter the shell of etl-container. 
    - Start the jupyter notebook by 'jupyter notebook --ip=0.0.0.0 --allow-root'. 
