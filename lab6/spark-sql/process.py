@@ -128,7 +128,7 @@ def join_with_US_gender(spark: SparkSession, data: DataFrame):
 
     return data.join(us_df, data.marital_status == us_df.marital_status_statistics, 'outer')
 
-def ages30to50(data: DataFrame):
+def ages_30_to_50(data: DataFrame):
     # Select a subset of the data with the age range between 30 and 50
     data = data.filter((data.age <= 50) & (data.age >= 30))
 
@@ -136,8 +136,16 @@ def ages30to50(data: DataFrame):
     pandas_df = data.toPandas()
     
     print(pandas_df.describe())
-    pandas_df.to_csv("data/pandas_data.csv",header=True,index=False)
+    pandas_df.to_csv("data/data_30_to_50.csv",header=True,index=False)
 
+def store_pyspark_dataframe_as_csv(data: DataFrame):
+    # Transforming the pyspark dataframe to pandas, and printing the summary of the statistics
+    pandas_df = data.toPandas()
+    
+    print(pandas_df.describe())
+    pandas_df.to_csv("data/data_processed.csv",header=True,index=False)
+
+    
 def main():
     # Create a Spark session
     spark = SparkSession.builder \
@@ -153,7 +161,7 @@ def main():
 
     data.show(5)
 
-    ages30to50(data)
+    store_pyspark_dataframe_as_csv(data)
 
     spark.stop()
 

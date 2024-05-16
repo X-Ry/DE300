@@ -1,6 +1,14 @@
 # Lab 6 Assignment
 
+## What I Implemented and Instructions on How to Run:
+Word Count can be run by building and starting the docker container with `bash run.sh`, entering the word-count folder, and then running `bash run-py-spark.sh`
+
+Spark SQL can be run by starting the docker container with `bash run.sh`, entering the spark-sql folder, then running:
+`source demos/bin/activate`
+Then you can run this command to run the jupyter notebook: `jupyter notebook --ip=0.0.0.0 --allow-root`, which contains my completed code for the Spark-sql part of the assignment, the functions added are "ages_30_to_50" which address #1, and  "store_pyspark_dataframe_as_csv" which addresses #2.  These same functions are included in process.py, and I wrote "store_pyspark_dataframe_as_csv" separately as during lab it was mentioned that #2 should be for all of the data, not just the subset of ages 30-50. The process.py file can be run using the bash script `bash run-py-spark.sh`.
+  
 ## Word Count
+
 1 Save only the words that have count greater or equal to 3.
 
 ## Spark-sql
