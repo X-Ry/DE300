@@ -3,28 +3,48 @@ The main portion of code I wrote is in `spark-heart-disease.py` and `smoke-data-
 ## Task 5: Select your final model based on relevant criteria.
 
 Model: Random Forest
+
 Accuracy: 0.722
+
 Precision: 0.723
+
 Recall: 0.708
+
 F1: 0.748
 
+
 Model: Logistic Regression
+
 Accuracy: 0.722
+
 Precision: 0.722
+
 Recall: 0.722
+
+
 F1: 0.722
 
 Model: Decision Tree
+
 Accuracy: 0.708
+
 Precision: 0.710
+
 Recall: 0.694
+
 F1: 0.651
 
+
 Model: Gradient Boosting
+
 Accuracy: 0.722
+
 Precision: 0.722
+
 Recall: 0.681
+
 F1: 0.693
+
 
 Much like in my Homework 2, I think Random Forest is the best choice here. The Random Forest has the highest accuracy, precision, recall, and F1 score, which are all very important criteria in choosing an accurate predictor.
 
@@ -41,8 +61,6 @@ Then in docker, run:
     cd spark-on-AWS
 
     spark-submit spark-heart-disease.py
-
-pip install pyspark numpy pandas && cd spark-on-AWS && spark-submit spark-pt5-local.py
 
 
 ## How to see my code on AWS EMR:
