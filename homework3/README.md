@@ -2,7 +2,7 @@ The main portion of code I wrote is in `spark-heart-disease.py` and `smoke-data-
 
 ## Task 5: Select your final model based on relevant criteria.
 
-Model: Random Forest
+#### Model: Random Forest
 
 Accuracy: 0.722
 
@@ -13,7 +13,7 @@ Recall: 0.708
 F1: 0.748
 
 
-Model: Logistic Regression
+#### Model: Logistic Regression
 
 Accuracy: 0.722
 
@@ -21,10 +21,10 @@ Precision: 0.722
 
 Recall: 0.722
 
-
 F1: 0.722
 
-Model: Decision Tree
+
+#### Model: Decision Tree
 
 Accuracy: 0.708
 
@@ -35,7 +35,7 @@ Recall: 0.694
 F1: 0.651
 
 
-Model: Gradient Boosting
+#### Model: Gradient Boosting
 
 Accuracy: 0.722
 
