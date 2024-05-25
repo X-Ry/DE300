@@ -1,0 +1,25 @@
+Model: Random Forest
+Accuracy: 0.806
+Precision: 0.784
+Recall: 0.792
+F1: 0.775
+
+Model: Logistic Regression
+Accuracy: 0.722
+Precision: 0.722
+Recall: 0.722
+F1: 0.707
+
+Model: Decision Tree
+Accuracy: 0.708
+Precision: 0.710
+Recall: 0.708
+F1: 0.706
+
+Model: Gradient Boosting
+Accuracy: 0.625
+Precision: 0.684
+Recall: 0.653
+F1: 0.663
+
+
