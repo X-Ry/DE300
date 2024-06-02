@@ -1,3 +1,5 @@
+![Finished DAG](https://i.ibb.co/2qVbRS6/image.png)
+
 ## Assignemnt
 
 The main purpose of this assignment is to make a ml-pipeline (the dag file ./src/pro-pipeline.py) work on the apache-airflow on AWS (MWAA). The file ./src/pro-pipeline.py in this repo currently download data using SFTPOperator, you need to modify it so that the pipeline read data from the a S3 bucket (you upload data (wine.csv) to this bucket). The pipeline also needs to build connections to an RDS database on AWS, so that all the data share between steps is realized by reading from or writing to the RDS database. 
