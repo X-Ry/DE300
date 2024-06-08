@@ -3,7 +3,7 @@
 
 My code is within the MWAA environment `de300spring2024-airflow-demo`, and the DAG name is `ryan_newkirk_hw4_6`. You can see it has run succesfully here:
 
-![local screenshot](https://i.ibb.co/GWQbY1K/image.png)
+![Screenshot from AWS](https://i.ibb.co/YTyPQq4/image.png)
 
 My DAG code can be found in the `de300spring2024-airflow s3` bucket, under the filename `ryan_newkirk_hw4_6.py`. The entire airflow code is within this file.
 

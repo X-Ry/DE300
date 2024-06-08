@@ -9,7 +9,8 @@ from pyspark.sql.functions import col, when, mean, median, monotonically_increas
 from pyspark.sql.types import IntegerType, FloatType, StringType, StructType, StructField
 from pyspark.ml import Pipeline
 from pyspark.ml.feature import VectorAssembler, StandardScaler
-from pyspark.ml.classification import LogisticRegression, RandomForestClassifier, LinearSVC, DecisionTreeClassifier, GBTClassifier
+from pyspark.ml.classification import LogisticRegression as PySparkLogisticRegression
+from pyspark.ml.classification import RandomForestClassifier, LinearSVC, DecisionTreeClassifier, GBTClassifier
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 from pyspark.ml.tuning import CrossValidator, ParamGridBuilder
 from pyspark.sql import Row
@@ -273,6 +274,19 @@ def remove_smoke2(**kwargs):
 
     return out_path
 
+def save_metrics_to_csv(model_name, accuracy, precision, recall, f1_score):
+    # Create a DataFrame with the metrics
+    df_metrics = pd.DataFrame({
+        'Model': [model_name],
+        'Accuracy': [accuracy],
+        'Precision': [precision],
+        'Recall': [recall],
+        'F1 Score': [f1_score]
+    })
+    out_path = f'/tmp/{model_name}_evaluation.csv'
+    # Save the DataFrame to a CSV file
+    df_metrics.to_csv(out_path, index=False)
+
 def lr1(**kwargs):
     spark_session = SparkSession.builder.appName("HW4").getOrCreate()
     heart_disease_df = spark_session.read.csv("/tmp/heart_disease_remove_smoke1.csv", header=True, inferSchema=True)
@@ -280,7 +294,7 @@ def lr1(**kwargs):
     feature_columns.remove('target')
     vector_assembler = VectorAssembler(inputCols=feature_columns, outputCol='features')
     training_df, testing_df = heart_disease_df.randomSplit([0.9, 0.1], seed=42)
-    logistic_regression_model = LogisticRegression(labelCol='target', featuresCol='features', maxIter=100)
+    logistic_regression_model = PySparkLogisticRegression(labelCol='target', featuresCol='features', maxIter=100)
     pipeline = Pipeline(stages=[vector_assembler, logistic_regression_model])
     fitted_model = pipeline.fit(training_df)
     prediction_df = fitted_model.transform(testing_df)
@@ -297,14 +311,7 @@ def lr1(**kwargs):
     model_recall = recall_evaluator.evaluate(prediction_df)
     model_f1 = f1_evaluator.evaluate(prediction_df)
 
-    # Get the task instance from the kwargs
-    task_instance = kwargs['ti']
-
-    # Push each metric to XCom
-    task_instance.xcom_push(key='lr1_accuracy', value=model_accuracy)
-    task_instance.xcom_push(key='lr1_precision', value=model_precision)
-    task_instance.xcom_push(key='lr1_recall', value=model_recall)
-    task_instance.xcom_push(key='lr1_f1', value=model_f1)
+    save_metrics_to_csv('lr1', model_accuracy, model_precision, model_recall, model_f1)
 
     # Stop the Spark session
     spark_session.stop()
@@ -336,14 +343,7 @@ def svm1(**kwargs):
     model_recall = recall_evaluator.evaluate(prediction_df)
     model_f1 = f1_evaluator.evaluate(prediction_df)
 
-    # Get the task instance from the kwargs
-    task_instance = kwargs['ti']
-
-    # Push each metric to XCom
-    task_instance.xcom_push(key='svm1_accuracy', value=model_accuracy)
-    task_instance.xcom_push(key='svm1_precision', value=model_precision)
-    task_instance.xcom_push(key='svm1_recall', value=model_recall)
-    task_instance.xcom_push(key='svm1_f1', value=model_f1)
+    save_metrics_to_csv('svm1', model_accuracy, model_precision, model_recall, model_f1)
 
     spark_session.stop()
 
@@ -362,7 +362,7 @@ def lr2(**kwargs):
     # Initializing the Logistic Regression model
     logistic_regression_model = LogisticRegression(max_iter=1000, random_state=42)
     
-    # Training the model
+       # Training the model
     logistic_regression_model.fit(X_train_set, y_train_set)
 
     # Using cross_val_score for evaluation
@@ -371,11 +371,18 @@ def lr2(**kwargs):
                        'recall': make_scorer(recall_score, average='weighted'),
                        'f1': make_scorer(f1_score, average='weighted')}
     
+    metrics_results = {}
     for metric_name, scorer in scoring_metrics.items():
         scores = cross_val_score(logistic_regression_model, X_features, y_target, cv=5, scoring=scorer)
         avg_score = scores.mean()
-        # Push each metric's average score to XCom
-        kwargs['ti'].xcom_push(key=f'lr2_{metric_name}', value=avg_score)
+        metrics_results[metric_name] = avg_score
+    
+    # Save the metrics to a CSV file
+    save_metrics_to_csv('lr2', 
+                        metrics_results['accuracy'], 
+                        metrics_results['precision'], 
+                        metrics_results['recall'], 
+                        metrics_results['f1'])
     
 def svm2(**kwargs):
     heart_disease_df = pd.read_csv("/tmp/heart_disease_remove_smoke2.csv")
@@ -399,11 +406,18 @@ def svm2(**kwargs):
                        'recall': make_scorer(recall_score, average='weighted'),
                        'f1': make_scorer(f1_score, average='weighted')}
     
+    metrics_results = {}
     for metric_name, scorer in scoring_metrics.items():
         scores = cross_val_score(svm_classifier, X_features, y_target, cv=5, scoring=scorer)
         avg_score = scores.mean()
-        # Push each metric's average score to XCom
-        kwargs['ti'].xcom_push(key=f'svm2_{metric_name}', value=avg_score)
+        metrics_results[metric_name] = avg_score
+    
+    # Save the metrics to a CSV file
+    save_metrics_to_csv('svm2', 
+                        metrics_results['accuracy'], 
+                        metrics_results['precision'], 
+                        metrics_results['recall'], 
+                        metrics_results['f1'])
     
 
 def lr3(**kwargs):
@@ -428,11 +442,18 @@ def lr3(**kwargs):
                        'recall': make_scorer(recall_score, average='weighted'),
                        'f1': make_scorer(f1_score, average='weighted')}
     
+    metrics_results = {}
     for metric_name, scorer in scoring_metrics.items():
         scores = cross_val_score(logistic_regression_model, X_features, y_target, cv=5, scoring=scorer)
         avg_score = scores.mean()
-        # Push each metric's average score to XCom
-        kwargs['ti'].xcom_push(key=f'lr3_{metric_name}', value=avg_score)
+        metrics_results[metric_name] = avg_score
+    
+    # Save the metrics to a CSV file
+    save_metrics_to_csv('lr3', 
+                        metrics_results['accuracy'], 
+                        metrics_results['precision'], 
+                        metrics_results['recall'], 
+                        metrics_results['f1'])
 
 def svm3(**kwargs):
     heart_disease_df = pd.read_csv("/tmp/heart_disease_merge.csv")
@@ -456,48 +477,69 @@ def svm3(**kwargs):
                        'recall': make_scorer(recall_score, average='weighted'),
                        'f1': make_scorer(f1_score, average='weighted')}
     
+    metrics_results = {}
     for metric_name, scorer in scoring_metrics.items():
         scores = cross_val_score(svm_classifier, X_features, y_target, cv=5, scoring=scorer)
         avg_score = scores.mean()
-        # Push each metric's average score to XCom
-        kwargs['ti'].xcom_push(key=f'svm3_{metric_name}', value=avg_score)
+        metrics_results[metric_name] = avg_score
+    
+    # Save the metrics to a CSV file
+    save_metrics_to_csv('svm3', 
+                        metrics_results['accuracy'], 
+                        metrics_results['precision'], 
+                        metrics_results['recall'], 
+                        metrics_results['f1'])
 
 def compare(**kwargs):
-    task_instance = kwargs['ti']
+    # Define the paths to the CSV files
+    csv_paths = {
+        'lr1': '/tmp/lr1_evaluation.csv',
+        'lr2': '/tmp/lr2_evaluation.csv',
+        'lr3': '/tmp/lr3_evaluation.csv',
+        'svm1': '/tmp/svm1_evaluation.csv',
+        'svm2': '/tmp/svm2_evaluation.csv',
+        'svm3': '/tmp/svm3_evaluation.csv'
+    }
     
-    # Pull accuracies from XCom
-    lr1_accuracy = task_instance.xcom_pull(task_ids='lr1', key='lr1_accuracy')
-    lr2_accuracy = task_instance.xcom_pull(task_ids='lr2', key='lr2_accuracy')
-    lr3_accuracy = task_instance.xcom_pull(task_ids='lr3', key='lr3_accuracy')
-    svm1_accuracy = task_instance.xcom_pull(task_ids='svm1', key='svm1_accuracy')
-    svm2_accuracy = task_instance.xcom_pull(task_ids='svm2', key='svm2_accuracy')
-    svm3_accuracy = task_instance.xcom_pull(task_ids='svm3', key='svm3_accuracy')
+    # Read accuracies from the CSV files
+    accuracies = {}
+    for model_name, csv_path in csv_paths.items():
+        df = pd.read_csv(csv_path)
+        accuracies[model_name] = df['Accuracy'].iloc[0]
     
-    # List of accuracies with corresponding task IDs
-    accuracy_list = [
-        ('lr1', lr1_accuracy),
-        ('lr2', lr2_accuracy),
-        ('lr3', lr3_accuracy),
-        ('svm1', svm1_accuracy),
-        ('svm2', svm2_accuracy),
-        ('svm3', svm3_accuracy)
-    ]
-    
-    # Find the task ID with the highest accuracy
-    best_accuracy_task_id, best_accuracy_value = max(accuracy_list, key=lambda x: x[1])
-    
-    # Push the best model task ID and accuracy to XCom
-    task_instance.xcom_push(key='best_model', value=best_accuracy_task_id)
+    # List of accuracies with corresponding model names
+    accuracy_list = [(model_name, accuracy) for model_name, accuracy in accuracies.items()]
+    print("accuracy list:")
+    print(accuracy_list)
+
+    # Find the model name with the highest accuracy
+    best_accuracy_model_name, best_accuracy_value = max(accuracy_list, key=lambda x: x[1])
+
+    df_best_model = pd.DataFrame({
+        'Best Model': [best_accuracy_model_name],
+        'Best Accuracy': [best_accuracy_value]
+    })
+    out_path = '/tmp/best_model_evaluation.csv'
+    # Save the DataFrame to a CSV file
+    df_best_model.to_csv(out_path, index=False)
 
 def evaluate(**kwargs):
-    # because we have pre-evaluated metrics in order to compare them, we can print them out here as our evaluation.
-    ti = kwargs['ti']
-    best_model = ti.xcom_pull(task_ids='compare', key='best_model')
-
-    accuracy = ti.xcom_pull(task_ids=f'{best_model}', key=f'{best_model}_accuracy')
-    precision = ti.xcom_pull(task_ids=f'{best_model}', key=f'{best_model}_precision')
-    recall = ti.xcom_pull(task_ids=f'{best_model}', key=f'{best_model}_recall')
-    f1 = ti.xcom_pull(task_ids=f'{best_model}', key=f'{best_model}_f1')
+    # Path to the CSV file containing the best model information
+    best_model_csv_path = '/tmp/best_model_evaluation.csv'
+    
+    # Read the best model information
+    df_best_model = pd.read_csv(best_model_csv_path)
+    best_model = df_best_model['Best Model'].iloc[0]
+    
+    # Path to the CSV file containing the metrics for the best model
+    best_model_metrics_csv_path = f'/tmp/{best_model}_evaluation.csv'
+    
+    # Read the metrics for the best model
+    df_metrics = pd.read_csv(best_model_metrics_csv_path)
+    accuracy = df_metrics['Accuracy'].iloc[0]
+    precision = df_metrics['Precision'].iloc[0]
+    recall = df_metrics['Recall'].iloc[0]
+    f1 = df_metrics['F1 Score'].iloc[0]
 
     print(f"Best Model: {best_model}\n"
           f"Accuracy: {accuracy:.4f}\n"
