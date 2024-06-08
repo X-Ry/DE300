@@ -1,9 +1,15 @@
 
 ### Ryan Newkirk HW4
 
-My code is within the MWAA environment `de300spring2024-airflow-demo`, and the DAG name is `ryan_newkirk_hw4_6`. You can see it has run succesfully here:
+My code is within the MWAA environment `de300spring2024-airflow-demo`, and the DAG name is `ryan_newkirk_hw4_6`. You can see it has run succesfully here (here is proof that it worked on AWS even if the MWAA breaks for some reason):
 
 ![Screenshot from AWS](https://i.ibb.co/YTyPQq4/image.png)
+
+You can see the output of the log of my final task, 'evaluate', returns the metrics of the model that was chosen as the best. Here is proof of getting those results on AWS:
+
+
+![Screenshot from AWS of Evaluation](https://i.ibb.co/99vQhJd/image.png)
+
 
 My DAG code can be found in the `de300spring2024-airflow s3` bucket, under the filename `ryan_newkirk_hw4_6.py`. The entire airflow code is within this file.
 
